@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Hello World</title>
+    <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
+
+    <!-- Add plugin styles -->
+    <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
+
+
+  </head>
+  <body>
+    <input type="file" multiple>
+
+    <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.js"></script>
+
+    <!-- add the Image Crop plugin script -->
+    <script src="https://unpkg.com/filepond-plugin-image-crop/dist/filepond-plugin-image-crop.js"></script>
+
+
+    <script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+    <script>
+    FilePond.registerPlugin(
+      // register the Image Crop plugin with FilePond
+      FilePondPluginImageCrop,
+      FilePondPluginImageResize,
+      FilePondPluginImageTransform
+    );
+
+    const inputElement = document.querySelector('input[type="file"]');
+    const pond = FilePond.create(inputElement, {
+      // add the Image Crop default aspect ratio
+        imageCropAspectRatio: 1,
+        imageResizeTargetWidth: 256,
+        imageResizeMode: 'contain',
+        imageTransformVariants: {
+            thumb_small_: transforms => {
+                transforms.resize.size.width = 256;
+                return transforms;
+            }
+        },
+        onaddfile: (err, fileItem) => {
+            console.log(err, fileItem);
+        },
+        onpreparefile: (fileItem, outputFiles) => {
+            console.log(outputFiles);
+            outputFiles.forEach(output => {
+                if( output.name == "thumb_small_" ) {
+                    const img = new Image();
+                    img.src = URL.createObjectURL(output.file);
+                    document.body.appendChild(img);
+                }
+            })
+        }
+    });
+    </script>
+  </body>
+</html>
